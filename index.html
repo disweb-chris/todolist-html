@@ -448,6 +448,7 @@
           // Evento Check en Detalles
           if (indiceDetalles !== null) {
             tareaCompletada(indiceDetalles); // Uso el indiceDetalle y el evento de tareaCompletada
+            guardarTareas();
             detallesTarea.style.display = "none";
           }
         });
@@ -460,6 +461,7 @@
         function tareaCompletada(indice) {
           // Evento Tarea completada
           tareas[indice].completada = !tareas[indice].completada;
+          guardarTareas();
           mostrarTareas();
         }
 
