@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="https://protoweb.space/websites/easterhack/wp-content/uploads/2024/05/favicon-todoist.png" type="image/x-icon">
+    <title>Todoist Mobile</title>
+    <style>
+      * {
+        font-family: Arial, sans-serif;
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: black; /* Fondo negro para el resto de la página */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
+      }
+      .mobile-wrapper {
+        width: 100%;
+        max-width: 480px; /* Ancho predeterminado de la pantalla */
+        height: 100vh;
+        background-color: #f0f0f0;
+        overflow-y: auto;
+        position: relative;
+        background-image: url(https://protoweb.space/websites/easterhack/wp-content/uploads/2024/05/fondoPantalla1.webp);
+        background-size: cover;
+        background-position: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      header {
+        height: 60px;
+      }
+      .contenedor {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 20px;
+      }
+      .frase {
+        font-size: 24px;
+        color: white;
+        margin-bottom: 20px;
+      }
+      .imagen {
+        max-width: 100%;
+        height: auto;
+        margin-bottom: 20px;
+      }
+      #agregar {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        background-color: #2c1733;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 50%;
+        font-size: 24px;
+        cursor: pointer;
+      }
+      #agregarTarea {
+        display: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #141414e0;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 90%;
+        z-index: 1000;
+        border-radius: 10px;
+        min-height: 310px;
+      }
+      #nombreTarea,
+      #descripcion,
+      #categoria,
+      #agregarTarea button {
+        width: 100%;
+        margin: 10px 0;
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 5px;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+      }
+      #agregarTarea button {
+        background-color: #2c1733;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+      #tareas {
+        padding: 20px 0;
+        width: 100%;
+        text-align: left;
+        margin: 0 auto;
+        text-align: left;
+        margin-top: 20px;
+      }
+      .tarea {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        background: #5178af;
+        border-bottom: 1px solid #5178af;
+        border-radius: 5px;
+        margin: 1px 0;
+        margin: 1px 16px 15px 16px;
+        width: calc(100% - 32px);
+      }
+      .tarea p {
+        width: 50%;
+        margin: 0;
+        color: white;
+      }
+      .tarea img {
+        width: 30px;
+        height: 30px;
+        margin-right: 10px;
+        background: #ffffffb5;
+        border-radius: 23px;
+        padding: 5px;
+        box-shadow: 0px 0px 3px 1px hsla(0, 0%, 5%, 0.586);
+      }
+      .tarea-completada {
+        text-decoration: line-through;
+        text-decoration-thickness: 3px;
+        color: #000;
+        background: #5178af33;
+      }
+      .icono {
+        cursor: pointer;
+        width: 20px;
+        height: 20px;
+      }
+      #confirmacion,
+      #detallesTarea {
+        display: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #c5dbf9;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 90%;
+        z-index: 2000;
+        border-radius: 10px;
+        text-align: center;
+      }
+      #confirmacion button,
+      #detallesTarea button {
+        background-color: #2c1733;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 5px;
+      }
+      #detalleImg {
+        width: 45%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="mobile-wrapper">
+      <header></header>
+
+      <section id="pantalla1" class="contenedor">
+        <!-- Pantalla inicial con frase -->
+        <div class="frase" id="frase">
+          "La inspiración existe, pero tiene que encontrarte trabajando."
+        </div>
+        <img
+          src="https://protoweb.space/websites/easterhack/wp-content/uploads/2024/05/inspiracion-icon.png"
+          alt="Inspiración"
+          class="imagen"
+        />
+      </section>
+
+      <section id="agregarTarea">
+        <!-- Pantalla para agregar las tareas -->
+        <form id="formTarea">
+          <input
+            type="text"
+            id="nombreTarea"
+            placeholder="Nombre de la tarea"
+            required
+          />
+          <select id="categoria" required>
+            <option value="" disabled selected>Seleccione categoría</option>
+            <option value="Trabajo">Trabajo</option>
+            <option value="Personal">Personal</option>
+            <option value="Otros">Otros</option>
+          </select>
+          <textarea
+            id="descripcion"
+            placeholder="Descripción de la tarea"
+            required
+          ></textarea>
+          <button type="submit">Agregar Tarea</button>
+        </form>
+      </section>
+
+      <button id="agregar">+</button>
+      <!-- Boton para agregar tarea -->
+
+      <section id="tareas">
+        <!-- Pantalla donde se mostrarán las tareas -->
+      </section>
+
+      <section id="confirmacion">
+        <!-- Pantalla para eliminar tarea -->
+        <p>¿Estás seguro de que deseas eliminar esta tarea?</p>
+        <button id="confirmarEliminar">Eliminar</button>
+        <button id="cancelarEliminar">Cancelar</button>
+      </section>
+
+      <section id="detallesTarea">
+        <!-- Pantalla detalle tarea -->
+        <img id="detalleImg" src="" alt="Imagen" />
+        <p id="detalleNombre"></p>
+        <p id="detalleDescripcion"></p>
+        <button id="detalleEliminar">Eliminar</button>
+        <button id="detalleCompletada">Completada</button>
+        <button id="cerrarDetalles">Cerrar</button>
+      </section>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const frases = [
+          "El éxito no es la clave de la felicidad. La felicidad es la clave del éxito. Si amas lo que haces, tendrás éxito.",
+          "El único lugar donde el éxito viene antes que el trabajo es en el diccionario.",
+          "No esperes. El tiempo nunca será justo.",
+          "La única manera de hacer un gran trabajo es amar lo que haces.",
+          "No te compares con nadie en este mundo. Si lo haces, te estás insultando a ti mismo.",
+          "La vida es lo que hacemos de ella. Los viajes son los viajeros. Lo que vemos no es lo que vemos, sino lo que somos.",
+          "El único modo de hacer bien un trabajo es amando lo que haces.",
+          "El fracaso es una gran oportunidad para empezar otra vez con más inteligencia.",
+          "La vida es 10% lo que te ocurre y 90% cómo reaccionas a ello.",
+          "La mejor manera de predecir el futuro es crearlo.",
+          "No sueñes tu vida, vive tu sueño.",
+          "Tu actitud, no tu aptitud, determinará tu altitud.",
+        ];
+
+        const random = Math.floor(Math.random() * frases.length); // Frase random
+        document.getElementById("frase").innerText = frases[random];
+
+        const botonAgregar = document.getElementById("agregar");
+        const agregarTareaListado = document.getElementById("agregarTarea");
+        const formTarea = document.getElementById("formTarea");
+        const pantallaListadoTareas = document.getElementById("tareas");
+        const confirmacion = document.getElementById("confirmacion");
+        const confirmarEliminar = document.getElementById("confirmarEliminar");
+        const cancelarEliminar = document.getElementById("cancelarEliminar");
+        const detallesTarea = document.getElementById("detallesTarea");
+        const detalleImg = document.getElementById("detalleImg");
+        const detalleNombre = document.getElementById("detalleNombre");
+        const detalleDescripcion =
+          document.getElementById("detalleDescripcion");
+        const detalleEliminar = document.getElementById("detalleEliminar");
+        const detalleCompletada = document.getElementById("detalleCompletada");
+        const cerrarDetalles = document.getElementById("cerrarDetalles");
+        let indiceEliminar = null;
+        let indiceDetalles = null;
+        let tareas = [];
+
+        // Función para cargar tareas desde localStorage
+        function cargarTareas() {
+          let tareasGuardadas = localStorage.getItem("tareasPorHacer"); // Traigo las tareas guaradadas y las asigno en la variable
+          if (tareasGuardadas) {
+            // Si hay tareas guardadas
+            tareas = JSON.parse(tareasGuardadas); // Recupero los datos y lo transformo a objeto
+          }
+        }
+
+        // Función para guardar tareas en localStorage
+        function guardarTareas() {
+          localStorage.setItem("tareasPorHacer", JSON.stringify(tareas)); // Convierto el array de tareas a una cadena JSON y luego los guardo en "tareas"
+        }
+
+        // Mostrar pantalla
+        function mostrarPantalla1() {
+          const pantalla1 = document.getElementById("pantalla1");
+          if (tareas.length === 0) {
+            pantalla1.style.display = "flex";
+            pantallaListadoTareas.style.display = "none";
+          } else {
+            pantalla1.style.display = "none";
+            pantallaListadoTareas.style.display = "block";
+          }
+        }
+
+        // Inicializar aplicacion
+        cargarTareas();
+        mostrarPantalla1();
+        mostrarTareas();
+
+        // Mostrar / ocultar formulario de agregar tarea
+        botonAgregar.addEventListener("click", () => {
+          if (agregarTareaListado.style.display === "none") {
+            agregarTareaListado.style.display = "block";
+          } else {
+            agregarTareaListado.style.display = "none";
+          }
+        });
+
+        // Capturar datos del formulario y agregarlos al array de tareas
+        formTarea.addEventListener("submit", (event) => {
+          event.preventDefault();
+          const nombreTarea = document.getElementById("nombreTarea").value;
+          const categoria = document.getElementById("categoria").value;
+          const descripcion = document.getElementById("descripcion").value;
+          const tarea = {
+            nombreTarea,
+            categoria,
+            descripcion,
+            completada: false,
+          }; // Crea un objeto con la tarea
+          tareas.push(tarea); // Subo el objeto al array de la tarea
+          guardarTareas(); // Guardar tareas en localStorage
+          agregarTareaListado.style.display = "none";
+          formTarea.reset();
+          mostrarPantalla1(); // Actualiza la pantalla inicial
+          mostrarTareas(); // Muestra la lista de tareas
+        });
+
+        // Mostrar tareas
+        function mostrarTareas() {
+          let tareasHTML = ""; // Nos aseguramos que el HTML este vacio
+          tareas.forEach((tarea, i) => {
+            // Recorre el array de tareas y genera el HTML para cada tarea, asigna un id a cada tarea y verifico que si esta completada
+            tareasHTML += `
+                        <div class="tarea ${
+                          tarea.completada ? "tarea-completada" : ""
+                        }" data-idTarea="${i}">
+                            <img src="${imagenCategoria(
+                              tarea.categoria
+                            )}" alt="Categoría">
+                            <p>${tarea.nombreTarea}</p>
+                            <img src="https://protoweb.space/websites/easterhack/wp-content/uploads/2024/05/check.png" alt="Check" class="icono checkIcono" data-idTarea="${i}">
+                            <img src="https://protoweb.space/websites/easterhack/wp-content/uploads/2024/05/eliminar.png" alt="Eliminar" class="icono eliminarIcono" data-idTarea="${i}">
+                        </div>
+                    `;
+          });
+
+          pantallaListadoTareas.innerHTML = tareasHTML; // Se imprime en la pantalla la tarea
+
+          const tareasListado =
+            pantallaListadoTareas.getElementsByClassName("tarea");
+          const checkIcono =
+            pantallaListadoTareas.getElementsByClassName("checkIcono");
+          const eliminarIcono =
+            pantallaListadoTareas.getElementsByClassName("eliminarIcono"); // Ubico los elementos de las tareas
+
+          for (let i = 0; i < tareasListado.length; i++) {
+            // Se crea evento detalle en cada tarea
+            tareasListado[i].addEventListener("click", (event) => {
+              const clicDetalle = event.target.className;
+              if (
+                clicDetalle !== "icono checkIcono" &&
+                clicDetalle !== "icono eliminarIcono"
+              ) {
+                mostrarDetalles(i);
+              }
+            });
+          }
+
+          for (let i = 0; i < checkIcono.length; i++) {
+            // Se crea evento check en cada tarea
+            checkIcono[i].addEventListener("click", (event) => {
+              const idTarea = parseInt(
+                event.target.getAttribute("data-idTarea")
+              ); // Obtiene el valor del atributo data-idTarea y se pasa a entero
+              tareas[idTarea].completada = !tareas[idTarea].completada;
+              guardarTareas(); // Guardar tareas en localStorage luego de marcar completada
+              mostrarTareas();
+            });
+          }
+
+          for (let i = 0; i < eliminarIcono.length; i++) {
+            // Se crea evento eliminar en cada tarea
+            eliminarIcono[i].addEventListener("click", (event) => {
+              indiceEliminar = parseInt(
+                event.target.getAttribute("data-idTarea")
+              ); // Asigno el id al indice
+              confirmacion.style.display = "block";
+            });
+          }
+        }
+
+        confirmarEliminar.addEventListener("click", () => {
+          // Se crea evento confirmar eliminar
+          if (indiceEliminar !== null) {
+            tareas.splice(indiceEliminar, 1); // Se elimina uno desde indiceEliminar
+            guardarTareas(); // Guardar tareas en localStorage luego de eliminar
+            mostrarTareas();
+            mostrarPantalla1();
+            confirmacion.style.display = "none";
+            indiceEliminar = null;
+          }
+        });
+
+        cancelarEliminar.addEventListener("click", () => {
+          // Se crea evento cancelar eliminar
+          confirmacion.style.display = "none";
+          detallesTarea.style.display = "block";
+          indiceEliminar = null;
+        });
+
+        // Mostrar Detalles
+        function mostrarDetalles(indice) {
+          const tarea = tareas[indice]; // Obtiene la tarea del array tareas en el índice dado y se llenan los datos
+          detalleImg.src = imagenCategoria(tarea.categoria);
+          detalleNombre.innerText = tarea.nombreTarea;
+          detalleDescripcion.innerText = tarea.descripcion;
+          indiceDetalles = indice;
+          detallesTarea.style.display = "block";
+        }
+
+        detalleEliminar.addEventListener("click", () => {
+          // Evento eliminar en Detalles
+          indiceEliminar = indiceDetalles; // Traigo el indiceEliminar que se creo antes y lo asigno en la pantalla Detalles
+          confirmacion.style.display = "block";
+          detallesTarea.style.display = "none"; // Traigo pantalla de confirmacion
+        });
+
+        detalleCompletada.addEventListener("click", () => {
+          // Evento Check en Detalles
+          if (indiceDetalles !== null) {
+            tareaCompletada(indiceDetalles); // Uso el indiceDetalle y el evento de tareaCompletada
+            detallesTarea.style.display = "none";
+          }
+        });
+
+        cerrarDetalles.addEventListener("click", () => {
+          // Evento Cerrar en Detalles
+          detallesTarea.style.display = "none";
+        });
+
+        function tareaCompletada(indice) {
+          // Evento Tarea completada
+          tareas[indice].completada = !tareas[indice].completada;
+          mostrarTareas();
+        }
+
+        function imagenCategoria(categoria) {
+          // Evaluacion de la categoria y la imagen que le corresponde
+          switch (categoria) {
+            case "Trabajo":
+              return "https://protoweb.space/websites/easterhack/wp-content/uploads/2024/05/trabajo.png";
+            case "Personal":
+              return "https://protoweb.space/websites/easterhack/wp-content/uploads/2024/05/personal.png";
+            case "Otros":
+              return "https://protoweb.space/websites/easterhack/wp-content/uploads/2024/05/otros.png";
+            default:
+              return "https://protoweb.space/websites/easterhack/wp-content/uploads/2024/05/otros.png";
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
